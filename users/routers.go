@@ -36,11 +36,11 @@ func UsersLogin(c *gin.Context) {
 	userModel, err := FindOneUser(&UserModel{Email: loginValidator.userModel.Email})
 
 	if err != nil {
-		c.JSON(http.StatusForbidden, common.NewError("login", errors.New("Not registered email or invalid password")))
+		c.JSON(http.StatusForbidden, common.NewError("login", errors.New("not registered email or invalid password")))
 		return
 	}
 	if userModel.checkPassword(loginValidator.User.Password) != nil {
-		c.JSON(http.StatusForbidden, common.NewError("login", errors.New("Not registered email or invalid password")))
+		c.JSON(http.StatusForbidden, common.NewError("login", errors.New("not registered email or invalid password")))
 		return
 	}
 	UpdateContextUserModel(c, userModel.ID)

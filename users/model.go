@@ -11,6 +11,7 @@ type UserModel struct {
 	Username     string `gorm:"column:username"`
 	Email        string `gorm:"column:email;unique_index"`
 	PasswordHash string `gorm:"column:password;not null"`
+	GroupID      uint
 }
 
 func AutoMigrate() {
@@ -44,4 +45,11 @@ func FindOneUser(condition interface{}) (UserModel, error) {
 	var model UserModel
 	err := db.Where(condition).First(&model).Error
 	return model, err
+}
+
+func UpdateOneUser(condition interface{}, data uint) error {
+	db := common.GetDB()
+	var model UserModel
+	err := db.Where(condition).Model(&model).Update("group_id", data).Error
+	return err
 }

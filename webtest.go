@@ -5,6 +5,9 @@ import (
 	gin "github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"movie-back/common"
+	"movie-back/groups"
+	"movie-back/movies"
+	"movie-back/nights"
 	"movie-back/users"
 	"net/http"
 )
@@ -22,6 +25,7 @@ func main() {
 	r.Use(static.Serve("/", static.LocalFile("./views", true)))
 
 	v1.Use(users.AuthMiddleware(true))
+	groups.GroupCreate(v1.Group("/groups"))
 	testAuth := r.Group("/api/ping")
 	testAuth.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -33,4 +37,7 @@ func main() {
 
 func Migrate(db *gorm.DB) {
 	users.AutoMigrate()
+	groups.AutoMigrate()
+	movies.Automigrate()
+	nights.AutoMigrate()
 }

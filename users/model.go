@@ -46,10 +46,3 @@ func FindOneUser(condition interface{}) (UserModel, error) {
 	err := db.Where(condition).First(&model).Error
 	return model, err
 }
-
-func UpdateOneUser(condition interface{}, data uint) error {
-	db := common.GetDB()
-	var model UserModel
-	err := db.Where(condition).Model(&model).Update("group_id", data).Error
-	return err
-}

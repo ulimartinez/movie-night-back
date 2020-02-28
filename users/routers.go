@@ -23,7 +23,7 @@ func UsersRegistration(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, common.NewError("database", err))
 	}
 	c.Set("my_user_model", userModelValidator.userModel)
-	serializer := UserSerializer{c}
+	serializer := UserSerializer{c, userModelValidator.userModel}
 	c.JSON(http.StatusCreated, gin.H{"user": serializer.Response()})
 }
 
@@ -44,6 +44,6 @@ func UsersLogin(c *gin.Context) {
 		return
 	}
 	UpdateContextUserModel(c, userModel.ID)
-	serializer := UserSerializer{c}
+	serializer := UserSerializer{c, UserModel{ID: 0}}
 	c.JSON(http.StatusOK, gin.H{"user": serializer.Response()})
 }

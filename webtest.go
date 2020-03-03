@@ -25,7 +25,9 @@ func main() {
 	r.Use(static.Serve("/", static.LocalFile("./views", true)))
 
 	v1.Use(users.AuthMiddleware(true))
+	v1.Use(groups.GroupMiddleware())
 	groups.GroupCreate(v1.Group("/groups"))
+	movies.MovieRegister(v1.Group("/movies"))
 	testAuth := r.Group("/api/ping")
 	testAuth.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{

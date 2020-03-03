@@ -15,7 +15,11 @@ func MovieRegister(router *gin.RouterGroup) {
 }
 
 func SubmitMovie(c *gin.Context) {
-	myGroupID, err := strconv.ParseUint(c.Param("grid"), 10, 32)
+	GroupID, err := strconv.ParseUint(c.Param("grid"), 10, 32)
+	myGroupID := uint(GroupID)
+	if myGroupID == 0 {
+		myGroupID = c.MustGet("my_group_id").(uint)
+	}
 	myUserModel := c.MustGet("my_user_model").(users.UserModel)
 	movieValidator := NewMovieValidator()
 	if err := movieValidator.Bind(c); err != nil {
@@ -26,7 +30,7 @@ func SubmitMovie(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, common.NewError("database", err))
 		return
 	}
-	sub, err := SubmitNewMovie(movieValidator.MovieModel, myUserModel, uint(myGroupID))
+	sub, err := SubmitNewMovie(movieValidator.MovieModel, myUserModel, myGroupID)
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, common.NewError("database", err))
 	}

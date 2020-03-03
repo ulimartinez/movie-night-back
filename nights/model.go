@@ -8,16 +8,19 @@ import (
 	"time"
 )
 
-type nightModel struct {
+type NightModel struct {
 	gorm.Model
-	Date  time.Time `gorm:"column:night_date"`
-	Host  users.UserModel
-	Movie movies.MovieSubmissionModel
+	Date         time.Time `gorm:"column:night_date"`
+	Host         users.UserModel
+	HostID       uint
+	GroupID      uint
+	Movie        movies.MovieSubmissionModel
+	SubmissionID uint
 }
 
 func AutoMigrate() {
 	db := common.GetDB()
-	db.AutoMigrate(&nightModel{})
+	db.AutoMigrate(&NightModel{})
 }
 func SaveOne(data interface{}) error {
 	db := common.GetDB()

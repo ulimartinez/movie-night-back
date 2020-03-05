@@ -1,11 +1,13 @@
 package movies
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"movie-back/common"
 	"movie-back/users"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 func MovieRegister(router *gin.RouterGroup) {
@@ -39,6 +41,11 @@ func SubmitMovie(c *gin.Context) {
 }
 
 func VoteID(c *gin.Context) {
+	myUser := c.MustGet("my_user_model").(users.UserModel)
+	if myUser.LastVote.AddDate(0, 0, 1).After(time.Now()) {
+		c.JSON(http.StatusUnprocessableEntity, common.NewError("date", errors.New("no votes available yet")))
+		return
+	}
 	movieID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, common.NewError("conversion", err))
@@ -50,6 +57,10 @@ func VoteID(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, common.NewError("database", err))
 	}
 	serializer := SubmissionSerializer{c, submission}
+	err = users.UpdateVoted(myUser)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, common.NewError("database", err))
+	}
 	c.JSON(http.StatusOK, gin.H{"submission": serializer.Response()})
 }
 

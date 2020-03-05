@@ -4,6 +4,7 @@ import (
 	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"movie-back/common"
+	"time"
 )
 
 type UserModel struct {
@@ -12,6 +13,7 @@ type UserModel struct {
 	Email        string `gorm:"column:email;unique_index"`
 	PasswordHash string `gorm:"column:password;not null"`
 	GroupID      uint
+	LastVote     time.Time `time_format:"2020-01-01"`
 }
 
 func AutoMigrate() {
@@ -45,4 +47,9 @@ func FindOneUser(condition interface{}) (UserModel, error) {
 	var model UserModel
 	err := db.Where(condition).First(&model).Error
 	return model, err
+}
+
+func UpdateVoted(data interface{}) error {
+	db := common.GetDB()
+	return db.Model(data).Update(&UserModel{LastVote: time.Now()}).Error
 }

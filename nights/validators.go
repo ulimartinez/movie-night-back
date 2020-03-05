@@ -8,7 +8,8 @@ import (
 
 type MovieNightValidator struct {
 	Night struct {
-		Date time.Time `form:"datetime" json:"datetime" binding:"required" time_format:"2020-01-01 24:24"`
+		Date     time.Time `form:"datetime" json:"datetime" binding:"required" time_format:"2006-01-02"`
+		Location string    `form:"location" json:"location" binding:"required"`
 	} `json:"night"`
 	MovieNight NightModel `json:"-"`
 }
@@ -19,6 +20,7 @@ func (selfr *MovieNightValidator) Bind(c *gin.Context) error {
 		return err
 	}
 	selfr.MovieNight.Date = selfr.Night.Date
+	selfr.MovieNight.Location = selfr.Night.Location
 	return nil
 }
 

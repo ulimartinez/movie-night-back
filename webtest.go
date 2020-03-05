@@ -28,6 +28,7 @@ func main() {
 	v1.Use(groups.GroupMiddleware())
 	groups.GroupCreate(v1.Group("/groups"))
 	movies.MovieRegister(v1.Group("/movies"))
+	nights.NightsRegister(v1.Group("/nights"))
 	testAuth := r.Group("/api/ping")
 	testAuth.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{

@@ -9,6 +9,7 @@ type MovieModel struct {
 	ID       uint   `gorm:"primary_key"`
 	Title    string `gorm:"column:title"`
 	Director string `gorm:"column:director"`
+	Year	 uint	`gorm:"column:year"`
 }
 
 type MovieSubmissionModel struct {

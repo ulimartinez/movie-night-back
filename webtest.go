@@ -20,6 +20,7 @@ func main() {
 	r := gin.Default()
 
 	v1 := r.Group("/api")
+	r.Use(users.CORSMiddleware())
 	users.UsersRegister(v1.Group("/users"))
 	v1.Use(users.AuthMiddleware(false))
 	r.Use(static.Serve("/", static.LocalFile("./views", true)))
@@ -35,7 +36,7 @@ func main() {
 			"message": "pong",
 		})
 	})
-	r.Run()
+	r.Run(":3000")
 }
 
 func Migrate(db *gorm.DB) {

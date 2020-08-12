@@ -36,7 +36,7 @@ func SubmitMovie(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, common.NewError("database", err))
 	}
-	serializer := SubmissionSerializer{Submission: sub, c: c}
+	serializer := SubmissionSerializer{Submission: sub, C: c}
 	c.JSON(http.StatusCreated, gin.H{"submission": serializer.Response()})
 }
 

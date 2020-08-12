@@ -9,6 +9,7 @@ type MovieValidator struct {
 	Movie struct {
 		Name     string `form:"name" json:"name" binding:"required"`
 		Director string `form:"director" json:"director"`
+		Year     uint   `form:"year" json:"year"`
 	} `json:"movie"`
 	MovieModel MovieModel `json:"-"`
 }
@@ -19,6 +20,7 @@ func (self *MovieValidator) Bind(c *gin.Context) error {
 		return err
 	}
 	self.MovieModel.Title = self.Movie.Name
+	self.MovieModel.Year = self.Movie.Year
 	return nil
 }
 func NewMovieValidator() MovieValidator {

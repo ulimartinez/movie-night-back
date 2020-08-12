@@ -3,7 +3,7 @@ package movies
 import "github.com/gin-gonic/gin"
 
 type SubmissionSerializer struct {
-	c          *gin.Context
+	C          *gin.Context
 	Submission MovieSubmissionModel
 }
 

@@ -3,13 +3,14 @@ package main
 import (
 	"github.com/gin-gonic/contrib/static"
 	gin "github.com/gin-gonic/gin"
+	"github.com/itsjamie/gin-cors"
 	"github.com/jinzhu/gorm"
 	"movie-back/common"
 	"movie-back/groups"
 	"movie-back/movies"
 	"movie-back/nights"
 	"movie-back/users"
-	"net/http"
+	"time"
 )
 
 func main() {
@@ -20,7 +21,15 @@ func main() {
 	r := gin.Default()
 
 	v1 := r.Group("/api")
-	r.Use(users.CORSMiddleware())
+	v1.Use(cors.Middleware(cors.Config{
+		Origins:         "*",
+		Methods:         "GET, PUT, POST, DELETE",
+		RequestHeaders:  "Origin, Authorization, Content-Type",
+		ExposedHeaders:  "",
+		MaxAge:          50 * time.Second,
+		Credentials:     false,
+		ValidateHeaders: false,
+	}))
 	users.UsersRegister(v1.Group("/users"))
 	v1.Use(users.AuthMiddleware(false))
 	r.Use(static.Serve("/", static.LocalFile("./views", true)))
@@ -30,12 +39,6 @@ func main() {
 	groups.GroupCreate(v1.Group("/groups"))
 	movies.MovieRegister(v1.Group("/movies"))
 	nights.NightsRegister(v1.Group("/nights"))
-	testAuth := r.Group("/api/ping")
-	testAuth.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
 	r.Run(":3000")
 }
 

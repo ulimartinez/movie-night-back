@@ -24,7 +24,7 @@ func main() {
 	v1.Use(cors.Middleware(cors.Config{
 		Origins:         "*",
 		Methods:         "GET, PUT, POST, DELETE, OPTIONS",
-		RequestHeaders:  "Origin, Authorization, Content-Type",
+		RequestHeaders:  "Origin, Authorization, Content-Type, Access-Control-Allow-Origin",
 		ExposedHeaders:  "",
 		MaxAge:          50 * time.Second,
 		Credentials:     false,

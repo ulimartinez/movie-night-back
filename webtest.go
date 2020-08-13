@@ -10,6 +10,7 @@ import (
 	"movie-back/movies"
 	"movie-back/nights"
 	"movie-back/users"
+	"net/http"
 	"time"
 )
 
@@ -30,6 +31,7 @@ func main() {
 		Credentials:     false,
 		ValidateHeaders: false,
 	}))
+	v1.OPTIONS("/", preflight)
 	users.UsersRegister(v1.Group("/users"))
 	v1.Use(users.AuthMiddleware(false))
 	r.Use(static.Serve("/", static.LocalFile("./views", true)))
@@ -40,6 +42,12 @@ func main() {
 	movies.MovieRegister(v1.Group("/movies"))
 	nights.NightsRegister(v1.Group("/nights"))
 	r.Run(":3000")
+}
+
+func preflight(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers")
+	c.JSON(http.StatusOK, struct{}{})
 }
 
 func Migrate(db *gorm.DB) {

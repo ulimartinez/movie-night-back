@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="8f37fe96-fbff-451e-99a5-0ce740d88da4" name="webserver" url="http://movies.ulimartech.com">
+        <fileTransfer rootFolder="/home/ulimartinez" accessType="SFTP" host="192.168.2.9" port="22" sshConfigId="f3e4f7fe-b309-40e5-b3c7-18bf85f0165e" sshConfig="ulimartinez@192.168.2.9:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

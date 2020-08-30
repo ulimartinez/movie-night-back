@@ -12,8 +12,11 @@ import (
 
 func MovieRegister(router *gin.RouterGroup) {
 	router.POST("submit/:grid", SubmitMovie)
+	router.OPTIONS("submit/:grid", preflight)
 	router.POST("vote/:id", VoteID)
+	router.OPTIONS("vote/:id", preflight)
 	router.GET("list/:id", List)
+	router.OPTIONS("list/:id", preflight)
 }
 
 func SubmitMovie(c *gin.Context) {
@@ -75,4 +78,9 @@ func List(c *gin.Context) {
 	}
 	serializer := SubmissionsSerializer{c, submissions}
 	c.JSON(http.StatusOK, gin.H{"submissions": serializer.Response()})
+}
+func preflight(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers")
+	c.JSON(http.StatusOK, struct{}{})
 }

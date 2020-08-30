@@ -11,10 +11,15 @@ import (
 
 func GroupCreate(router *gin.RouterGroup) {
 	router.POST("/create", GroupCreation)
+	router.OPTIONS("/create", preflight)
 	router.POST("/groupadd/:id", UserAddGroup)
+	router.OPTIONS("/groupadd/:id", preflight)
 	router.GET("/list", UserGroups)
+	router.OPTIONS("/list", preflight)
 	router.GET("/users/:grid", GroupUsers)
+	router.OPTIONS("/users/:grid", preflight)
 	router.POST("/set/:id", SetGroup)
+	router.OPTIONS("/set/:id", preflight)
 }
 
 func GroupCreation(c *gin.Context) {
@@ -94,4 +99,9 @@ func SetGroup(c *gin.Context) {
 	UpdateGroupModelContext(c, uint(groupId))
 	serializer := GroupSerializer{c, GroupModel{ID: 0}}
 	c.JSON(http.StatusOK, gin.H{"group": serializer.Response()})
+}
+func preflight(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers")
+	c.JSON(http.StatusOK, struct{}{})
 }

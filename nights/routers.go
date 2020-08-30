@@ -10,9 +10,13 @@ import (
 
 func NightsRegister(router *gin.RouterGroup) {
 	router.POST("/new/:id", CreateNight)
+	router.OPTIONS("/new/:id", preflight)
 	router.POST("/set/:grid/:sid", SetMovieToNight)
+	router.OPTIONS("/set/:grid/:sid", preflight)
 	router.POST("/history/:id", MarkHistory)
+	router.OPTIONS("/history/:id", preflight)
 	router.GET("/list/:grid", FindNights)
+	router.OPTIONS("/list/:grid", preflight)
 	router.GET("/history/:grid", FindHistory)
 }
 
@@ -94,4 +98,10 @@ func FindHistory(c *gin.Context) {
 	nights, err := ListNights(nightModel)
 	serializer := NightsSerializer{c, nights}
 	c.JSON(http.StatusOK, serializer.Response())
+}
+
+func preflight(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers")
+	c.JSON(http.StatusOK, struct{}{})
 }

@@ -10,6 +10,7 @@ import (
 func UsersRegister(router *gin.RouterGroup) {
 	router.POST("/", UsersRegistration)
 	router.POST("/login", UsersLogin)
+	router.OPTIONS("/login", preflight)
 }
 
 func UsersRegistration(c *gin.Context) {
@@ -46,4 +47,10 @@ func UsersLogin(c *gin.Context) {
 	UpdateContextUserModel(c, userModel.ID)
 	serializer := LoginSerializer{c, UserModel{ID: 0}}
 	c.JSON(http.StatusOK, gin.H{"user": serializer.Response()})
+}
+
+func preflight(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers")
+	c.JSON(http.StatusOK, struct{}{})
 }

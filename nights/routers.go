@@ -67,7 +67,7 @@ func MarkHistory(c *gin.Context) {
 	}
 	var nightModel NightModel
 	nightModel.ID = uint(id)
-	err = SetHistory(&nightModel)
+	err = SetHistory(nightModel)
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, common.NewError("database", err))
 		return

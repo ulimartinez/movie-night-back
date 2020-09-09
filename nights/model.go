@@ -51,7 +51,7 @@ func SetMovie(data interface{}) (NightModel, error) {
 
 func SetHistory(data NightModel) error {
 	db := common.GetDB()
-	db.Delete(data.Movie)
+	db.Where("id = ?", data.Movie.ID).Delete(&data.Movie)
 	return db.Model(data).Update(NightModel{History: true}).Error
 }
 

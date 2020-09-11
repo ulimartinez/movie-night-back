@@ -60,7 +60,7 @@ func Vote(condition interface{}) (MovieSubmissionModel, error) {
 func ListGroupSubmissions(condition uint) ([]MovieSubmissionModel, error) {
 	db := common.GetDB()
 	var submissions []MovieSubmissionModel
-	err := db.Where("group_id = ?", condition).Find(&submissions).Error
+	err := db.Where("group_id = ? AND viewed = ?", condition, false).Find(&submissions).Error
 	return submissions, err
 }
 func GetMovie(condition interface{}) (MovieModel, error) {

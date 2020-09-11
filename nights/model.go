@@ -49,16 +49,21 @@ func SetMovie(data interface{}) (NightModel, error) {
 	return nightModel, err
 }
 
-func SetHistory(data NightModel) error {
+func SetHistory(data interface{}) error {
 	db := common.GetDB()
-	db.Where("id = ?", data.Movie.ID).Delete(&data.Movie)
+	var night NightModel
+	db.Where(data).Find(&night)
+	db.Table("movie_submission_models").Where("id = ?", night.SubmissionID).Find(&night.Movie)
+	db.Table("movie_submission_models").Where(night.Movie).Update(movies.MovieSubmissionModel{Viewed: true})
 	return db.Model(data).Update(NightModel{History: true}).Error
 }
 
 func ListNights(data interface{}) ([]NightModel, error) {
 	db := common.GetDB()
 	var nights []NightModel
-	err := db.Where(data).Find(&nights).Error
+	realData := data.(NightModel)
+	fmt.Print("%+v\n", data)
+	err := db.Where(map[string]interface{}{"group_id": realData.GroupID, "History": realData.History}).Find(&nights).Error
 	for i, night := range nights {
 		db.Where("id = ?", night.SubmissionID).Find(&nights[i].Movie)
 	}

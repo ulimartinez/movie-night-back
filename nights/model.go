@@ -41,24 +41,29 @@ func SetMovie(data interface{}) (NightModel, error) {
 	var result Result
 	db := common.GetDB()
 	db.Where(data).First(&nightModel)
-	db.Table("movie_submission_models").Select("MAX(votes) as max, group_id as groupid").Where("group_id = ?", nightModel.GroupID).Group("group_id").Scan(&result)
-	db.Where(movies.MovieSubmissionModel{GroupID: result.Groupid, Votes: result.Max}).First(&movieModel)
+	db.Table("movie_submission_models").Select("MAX(votes) as max, group_id as groupid").Where("group_id = ? AND viewed=0", nightModel.GroupID).Group("group_id").Scan(&result)
+	db.Where("group_id = ? AND votes = ? AND viewed = 0", result.Groupid, result.Max).First(&movieModel)
 	fmt.Print(result)
 	nightModel.Movie = movieModel
 	err := db.Model(nightModel).Update(NightModel{SubmissionID: movieModel.ID}).Error
 	return nightModel, err
 }
 
-func SetHistory(data NightModel) error {
+func SetHistory(data interface{}) error {
 	db := common.GetDB()
-	db.Where("id = ?", data.Movie.ID).Delete(&data.Movie)
+	var night NightModel
+	db.Where(data).Find(&night)
+	db.Table("movie_submission_models").Where("id = ?", night.SubmissionID).Find(&night.Movie)
+	db.Table("movie_submission_models").Where(night.Movie).Update(movies.MovieSubmissionModel{Viewed: true})
 	return db.Model(data).Update(NightModel{History: true}).Error
 }
 
 func ListNights(data interface{}) ([]NightModel, error) {
 	db := common.GetDB()
 	var nights []NightModel
-	err := db.Where(data).Find(&nights).Error
+	realData := data.(NightModel)
+	fmt.Print("%+v\n", data)
+	err := db.Where(map[string]interface{}{"group_id": realData.GroupID, "History": realData.History}).Find(&nights).Error
 	for i, night := range nights {
 		db.Where("id = ?", night.SubmissionID).Find(&nights[i].Movie)
 	}

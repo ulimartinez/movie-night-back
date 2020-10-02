@@ -41,8 +41,8 @@ func SetMovie(data interface{}) (NightModel, error) {
 	var result Result
 	db := common.GetDB()
 	db.Where(data).First(&nightModel)
-	db.Table("movie_submission_models").Select("MAX(votes) as max, group_id as groupid").Where("group_id = ?", nightModel.GroupID).Group("group_id").Scan(&result)
-	db.Where(movies.MovieSubmissionModel{GroupID: result.Groupid, Votes: result.Max}).First(&movieModel)
+	db.Table("movie_submission_models").Select("MAX(votes) as max, group_id as groupid").Where("group_id = ? AND viewed=0", nightModel.GroupID).Group("group_id").Scan(&result)
+	db.Where("group_id = ? AND votes = ? AND viewed = 0", result.Groupid, result.Max).First(&movieModel)
 	fmt.Print(result)
 	nightModel.Movie = movieModel
 	err := db.Model(nightModel).Update(NightModel{SubmissionID: movieModel.ID}).Error

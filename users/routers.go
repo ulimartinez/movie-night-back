@@ -11,6 +11,8 @@ func UsersRegister(router *gin.RouterGroup) {
 	router.POST("/", UsersRegistration)
 	router.POST("/login", UsersLogin)
 	router.OPTIONS("/login", preflight)
+	router.GET("/discord", DiscordFetch)
+	router.POST("/discord", DiscordAdd)
 }
 
 func UsersRegistration(c *gin.Context) {
@@ -47,6 +49,30 @@ func UsersLogin(c *gin.Context) {
 	UpdateContextUserModel(c, userModel.ID)
 	serializer := LoginSerializer{c, UserModel{ID: 0}}
 	c.JSON(http.StatusOK, gin.H{"user": serializer.Response()})
+}
+
+func DiscordFetch(c *gin.Context) {
+	discordModel, err := FindDiscordUsers()
+	if err != nil {
+		c.JSON(http.StatusForbidden, common.NewError("discord", errors.New("no users found")))
+		return
+	}
+	serializer := DiscordSerializer{c}
+	c.JSON(http.StatusOK, gin.H{:"discord": serializer.Response()})
+}
+
+func DiscordAdd(c *gin.Context) {
+	discordModelValidator := NewDiscordModelValidator()
+	if err := discordModelValidator.Bind(c); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, common.NewValidatorError(err))
+		return
+	}
+	if err := SaveOne(&discordModelValidator.discordModel); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, common.NewError("database", err))
+		return
+	}
+	serializer := DiscordSerializer{c, discordModelValidator.discordModel}
+	c.JSON(http.StatusCreated, gin.H{"discord": serializer.Response()})
 }
 
 func preflight(c *gin.Context) {

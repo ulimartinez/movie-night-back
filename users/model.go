@@ -16,9 +16,16 @@ type UserModel struct {
 	LastVote     time.Time `time_format:"2020-01-01" gorm:"default:2020-01-01"`
 }
 
+type DiscordModel struct {
+	Id	uint	`gorm:"primary_key"`
+	UserId	string	`gorm:"column:userid"`
+	Token	string `gorm:"column:token"`
+}
+
 func AutoMigrate() {
 	db := common.GetDB()
 	db.AutoMigrate(&UserModel{})
+	db.AutoMigrate(&DiscordModel{})
 }
 func (u *UserModel) setPassword(password string) error {
 	if len(password) == 0 {
@@ -42,11 +49,11 @@ func SaveOne(data interface{}) error {
 	return err
 }
 
-func FindOneUser(condition interface{}) (UserModel, error) {
+func FindDiscordUsers(data interface{}) ([]DiscordModel, error) {
 	db := common.GetDB()
-	var model UserModel
-	err := db.Where(condition).First(&model).Error
-	return model, err
+	var models []DiscordModel
+	err := db.Find(&models).Error
+	return models, err
 }
 
 func UpdateVoted(data interface{}) error {

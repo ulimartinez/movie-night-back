@@ -14,6 +14,14 @@ type UserModelValidator struct {
 	userModel UserModel `json:"-"`
 }
 
+type DiscordModelValidator struct {
+	Discord struct {
+		Userid	string	`form:"userid" json:"userid" binding:"required"`
+		Token	string	`form:"token" json:"token" binding:"required"`
+	} `json:"discord"`
+	discordModel	DiscordModel	`json:"-"`
+}
+
 func (self *UserModelValidator) Bind(c *gin.Context) error {
 	err := common.Bind(c, self)
 	if err != nil {
@@ -25,9 +33,24 @@ func (self *UserModelValidator) Bind(c *gin.Context) error {
 	return nil
 }
 
+func (self *DiscordModelValidator) Bind(c *gin.Context) error {
+	err := common.Bind(c, self)
+	if err != nil {
+		return err
+	}
+	self.discordModel.UserId = self.Discord.Userid
+	self.discordModel.Token = self.Discord.Token
+	return nil
+}
+
 func NewUserModelValidator() UserModelValidator {
 	userModelValidator := UserModelValidator{}
 	return userModelValidator
+}
+
+func NewDiscordModelValidator() DiscordModelValidator {
+	discordModelValidator := DiscordModelValidator{}
+	return discordModelValidator
 }
 
 func NewUserModelValidatorFillWith(userModel UserModel) UserModelValidator {

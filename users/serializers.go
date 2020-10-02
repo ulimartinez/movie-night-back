@@ -50,3 +50,35 @@ func (selfr *UserSerializer) Response() UserResponse {
 	}
 	return user
 }
+
+type DiscordSerializer struct {
+	C	*gin.Context
+	Discord DiscordModel
+}
+
+type DiscordResponse struct {
+	Userid	string	`json:"userid"`
+	Token	string	`json:"token"`
+}
+type DiscordsSerializer struct {
+	c *gin.Context
+	dcs []DiscordModel
+}
+
+func (selfr *DiscordsSerializer) Response() []DiscordResponse {
+	response := []DiscordResponse{}
+	for _, dc := range selfr.dcs {
+		serializer := DiscordSerializer{selfr.c, dc}
+		response = append(response, serializer.Response()
+	}
+	return response
+}
+
+func (selfr *DiscordSerializer) Response() DiscordResponse {
+	discordModel := selfr.Discord
+	discordResponse := DiscordResponse{
+		Userid:	discordModel.UserId
+		Token:	discordModel.Token
+	}
+	return discordResponse
+}

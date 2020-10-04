@@ -20,6 +20,7 @@ type DiscordModel struct {
 	Id	uint	`gorm:"primary_key"`
 	UserId	string	`gorm:"column:userid"`
 	Token	string `gorm:"column:token"`
+	Group	uint	`gorm:"column:group"`
 }
 
 func AutoMigrate() {

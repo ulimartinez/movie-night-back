@@ -69,16 +69,16 @@ func (selfr *DiscordsSerializer) Response() []DiscordResponse {
 	response := []DiscordResponse{}
 	for _, dc := range selfr.dcs {
 		serializer := DiscordSerializer{selfr.c, dc}
-		response = append(response, serializer.Response()
+		response = append(response, serializer.Response())
 	}
 	return response
 }
 
 func (selfr *DiscordSerializer) Response() DiscordResponse {
 	discordModel := selfr.Discord
-	discordResponse := DiscordResponse{
-		Userid:	discordModel.UserId
-		Token:	discordModel.Token
+	discordResponse := DiscordResponse {
+		Userid:	discordModel.UserId,
+		Token:	discordModel.Token,
 	}
 	return discordResponse
 }

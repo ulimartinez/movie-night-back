@@ -49,6 +49,13 @@ func SaveOne(data interface{}) error {
 	return err
 }
 
+func FindOneUser(condition interface{}) (UserModel, error) {
+	db := common.GetDB()
+	var model UserModel
+	err := db.Where(condition).First(&model).Error
+	return model, err
+}
+
 func FindDiscordUsers(data interface{}) ([]DiscordModel, error) {
 	db := common.GetDB()
 	var models []DiscordModel

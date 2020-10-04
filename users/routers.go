@@ -52,13 +52,13 @@ func UsersLogin(c *gin.Context) {
 }
 
 func DiscordFetch(c *gin.Context) {
-	discordModel, err := FindDiscordUsers()
+	discordModel, err := FindDiscordUsers(DiscordModel{})
 	if err != nil {
 		c.JSON(http.StatusForbidden, common.NewError("discord", errors.New("no users found")))
 		return
 	}
-	serializer := DiscordSerializer{c}
-	c.JSON(http.StatusOK, gin.H{:"discord": serializer.Response()})
+	serializer := DiscordsSerializer{c, discordModel}
+	c.JSON(http.StatusOK, gin.H{"discord": serializer.Response()})
 }
 
 func DiscordAdd(c *gin.Context) {

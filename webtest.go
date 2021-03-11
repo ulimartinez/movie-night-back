@@ -19,13 +19,13 @@ func main() {
 	Migrate(db)
 	defer db.Close()
 
-	r := gin.Default()
+	r := gin.New()
 
 	v1 := r.Group("/api")
 	v1.Use(cors.Middleware(cors.Config{
 		Origins:         "*",
 		Methods:         "GET, PUT, POST, DELETE, OPTIONS",
-		RequestHeaders:  "Origin, Authorization, Content-Type, Access-Control-Allow-Origin",
+		RequestHeaders:  "user-agent, Origin, Authorization, Content-Type, Access-Control-Allow-Origin",
 		ExposedHeaders:  "",
 		MaxAge:          50 * time.Second,
 		Credentials:     false,

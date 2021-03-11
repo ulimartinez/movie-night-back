@@ -13,7 +13,7 @@ type UserModel struct {
 	Email        string `gorm:"column:email;unique_index"`
 	PasswordHash string `gorm:"column:password;not null"`
 	GroupID      uint
-	LastVote     time.Time `time_format:"2020-01-01" gorm:"default:2020-01-01"`
+	LastVote     time.Time
 }
 
 type DiscordModel struct {

@@ -1,8 +1,13 @@
 package users
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
+	"golang.org/x/oauth2"
 	"github.com/gin-gonic/gin"
+	"github.com/ravener/discord-oauth2"
+	"io/ioutil"
 	"movie-back/common"
 	"net/http"
 )
@@ -13,6 +18,54 @@ func UsersRegister(router *gin.RouterGroup) {
 	router.OPTIONS("/login", preflight)
 	router.GET("/discord", DiscordFetch)
 	router.POST("/discord", DiscordAdd)
+	router.GET("/discord2", func(c *gin.Context){
+		c.Redirect(http.StatusFound, "https://discord.com/api/oauth2/authorize?client_id=761072595419398164&redirect_uri=http%3A%2F%2Fmovies.ulimartech.com%2Fapi%2Fusers%2Fauth&response_type=code&scope=identify")
+	})
+	router.GET("/auth", DiscordExchange)
+}
+
+func DiscordExchange(c *gin.Context) {
+	type DiscordUser struct {
+		Id			string
+		Username		string
+		Avatar			string
+		Discriminator		string
+		PublicFlags		string	`json::public_flags"`
+		Flags			int
+		Locale			string
+		MfaEnabled		bool	`json:"mfa_enabled"`
+		PremiumType		int	`json:"premium_type"`
+	}
+	var user DiscordUser
+	conf := &oauth2.Config{
+		RedirectURL: "http://movies.ulimartech.com/api/users/auth",
+		ClientID: "761072595419398164",
+		ClientSecret: "Tiidf-T6wD4h8n6rrgyZzdZvW5SAoIBC",
+		Scopes: []string{discord.ScopeIdentify},
+		Endpoint: discord.Endpoint,
+	}
+	token, err := conf.Exchange(oauth2.NoContext, c.Request.URL.Query().Get("code"))
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, common.NewError("discord", err))
+	}
+	res, err := conf.Client(oauth2.NoContext, token).Get("https://discordapp.com/api/v7/users/@me")
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, common.NewError("discord", err))
+	}
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+	json.Unmarshal([]byte(body), &user)
+	fmt.Printf("%s", user.Username)
+	fmt.Printf("%s", body)
+
+	serializer := LoginSerializer{c, UserModel{ID: 0}}
+	fmt.Print(serializer.Response())
+	//if err := SaveOne(DiscordModel{userid: user.Id, token: serializer.token}); err != nil {
+		//c.JSON(http.StatusUnprocessableEntity, common.NewError("database", err))
+		//return
+	//}
+	//serializer := DiscordSerializer{c, discordModelValidator.discordModel}
+	//c.JSON(http.StatusCreated, gin.H{"discord": serializer.Response()})
 }
 
 func UsersRegistration(c *gin.Context) {

@@ -18,9 +18,6 @@ func UsersRegister(router *gin.RouterGroup) {
 	router.OPTIONS("/login", preflight)
 	router.GET("/discord", DiscordFetch)
 	router.POST("/discord", DiscordAdd)
-	router.GET("/discord2", func(c *gin.Context){
-		c.Redirect(http.StatusFound, "https://discord.com/api/oauth2/authorize?client_id=761072595419398164&redirect_uri=http%3A%2F%2Fmovies.ulimartech.com%2Fapi%2Fusers%2Fauth&response_type=code&scope=identify")
-	})
 	router.GET("/auth", DiscordExchange)
 }
 
@@ -38,12 +35,13 @@ func DiscordExchange(c *gin.Context) {
 	}
 	var user DiscordUser
 	conf := &oauth2.Config{
-		RedirectURL: "http://movies.ulimartech.com/api/users/auth",
+		RedirectURL: "http://localhost:3000/api/users/auth",
 		ClientID: "761072595419398164",
 		ClientSecret: "Tiidf-T6wD4h8n6rrgyZzdZvW5SAoIBC",
 		Scopes: []string{discord.ScopeIdentify},
 		Endpoint: discord.Endpoint,
 	}
+	movie_night_token := c.Request.URL.Query().Get("state")
 	token, err := conf.Exchange(oauth2.NoContext, c.Request.URL.Query().Get("code"))
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, common.NewError("discord", err))
@@ -55,17 +53,13 @@ func DiscordExchange(c *gin.Context) {
 	defer res.Body.Close()
 	body, _ := ioutil.ReadAll(res.Body)
 	json.Unmarshal([]byte(body), &user)
-	fmt.Printf("%s", user.Username)
-	fmt.Printf("%s", body)
 
-	serializer := LoginSerializer{c, UserModel{ID: 0}}
-	fmt.Print(serializer.Response())
-	//if err := SaveOne(DiscordModel{userid: user.Id, token: serializer.token}); err != nil {
-		//c.JSON(http.StatusUnprocessableEntity, common.NewError("database", err))
-		//return
-	//}
-	//serializer := DiscordSerializer{c, discordModelValidator.discordModel}
-	//c.JSON(http.StatusCreated, gin.H{"discord": serializer.Response()})
+
+	if err := SaveOne(&DiscordModel{UserId: user.Id, Token: movie_night_token}); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, common.NewError("database", err))
+		return
+	}
+	c.Redirect(http.StatusFound, "/")
 }
 
 func UsersRegistration(c *gin.Context) {

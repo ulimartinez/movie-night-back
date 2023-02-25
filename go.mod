@@ -9,7 +9,7 @@ require (
 	github.com/itsjamie/gin-cors v0.0.0-20160420130702-97b4a9da7933
 	github.com/jinzhu/gorm v1.9.12
 	github.com/ravener/discord-oauth2 v0.0.0-20210215101605-d8beedd1c779
-	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
+	golang.org/x/crypto v0.1.0
 	golang.org/x/oauth2 v0.0.0-20210220000619-9bb904979d93
 	gopkg.in/go-playground/validator.v9 v9.29.1
 )
